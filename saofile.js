@@ -126,7 +126,9 @@ module.exports = {
       eslint: linter ? 'yes' : 'no',
       prettier: prettier ? 'yes' : 'no',
       axios: axios ? 'yes' : 'no',
-      esm
+      esm,
+      server: 'none',
+      test: 'none'
     }
   },
   actions() {
