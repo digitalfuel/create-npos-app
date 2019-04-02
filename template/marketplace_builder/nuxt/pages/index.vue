@@ -1,24 +1,31 @@
+<pos>
+---
+slug: /
+---
+{%- assign description = 'Nuxt PlatformOS intergration' -%}
+
+{%- export description namespace: "pages_index" -%}
+</pos>
+
 <template>
   <section class="container">
     <div>
-      <logo />
+      <logo/>
       <h1 class="title">
-        <%= name %>
+        {{ company }}
       </h1>
       <h2 class="subtitle">
-        <%= description %>
+        {{ description }}
       </h2>
       <div class="links">
         <a
           href="https://nuxtjs.org/"
           target="_blank"
-          class="button--green"
-        >Documentation</a>
+          class="button--green">Documentation</a>
         <a
           href="https://github.com/nuxt/nuxt.js"
           target="_blank"
-          class="button--grey"
-        >GitHub</a>
+          class="button--grey">GitHub</a>
       </div>
     </div>
   </section>
@@ -26,22 +33,40 @@
 
 <script>
 import Logo from '~/components/Logo.vue'
+import { mapMutations } from 'vuex'
+import { mapState } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
+
   components: {
     Logo
+  },
+  computed: {
+    ...mapState('pages_index', {
+      description: 'description',
+    }),
+    ...mapState('globals', {
+      company: 'company'
+    })
+  },
+  fetch ({ store, route, $axios }) {
+
+    return $axios.$get( 'pages/' + route.name + '/index.json')
+      .then( res => {
+      
+        store.commit('pages_' + route.name + '/pOS', res )
+
+      })
+
   }
+
 }
 </script>
 
 <style>
-<% if (ui === 'tailwind') { %>/* Sample `apply` at-rules with Tailwind CSS
+
 .container {
-  @apply min-h-screen flex justify-center items-center text-center mx-auto;
-}
-*/
-<% } %>.container {
-  margin: 0 auto;
   min-height: 100vh;
   display: flex;
   justify-content: center;
@@ -69,5 +94,9 @@ export default {
 
 .links {
   padding-top: 15px;
+}
+
+.red {
+  color: red
 }
 </style>

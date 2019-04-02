@@ -1,0 +1,20 @@
+query get_listings($per_page: Int = 20, $page: Int = 1, $query: String) {
+  listings(
+    per_page: $per_page
+    page: $page
+    query: { keyword: $query }
+    listing: { is_deleted: false, has_creator: true }
+  ) {
+    total_entries
+
+    results {
+      slug
+      name
+    }
+  }
+
+  current_user {
+    id
+    email
+  }
+}

@@ -7,8 +7,11 @@ import pkg from './package'
 const { resolve } = require('path')
 const pkg = require('../package')
 <%} else { -%>
-const pkg = require('./package')
-<% } -%>
+  const pkg = require('./package')
+  const merge = require('webpack-merge')
+  const moduleConfig = require('../../marketplace_builder/nuxt/nuxt.config.js')
+  require('dotenv').config()
+  <% } -%>
 <% if (!esm) { -%>
 <% if (ui === 'vuetify') { %>const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')<% } %>
 <% } -%>
@@ -16,31 +19,30 @@ const pkg = require('./package')
 <% if (esm) { -%>
 export default {
 <% } else { -%>
-module.exports = {
+module.exports = () => merge({ 
 <% } -%>
   mode: '<%= mode %>',
 <% if (server === 'adonis') { %>
   dev: process.env.NODE_ENV === 'development',
   srcDir: resolve(__dirname, '..', 'resources'),
 <% } %>
+
+  /*
+  ** Revised directories
+  */
+  dir: {
+    middleware: '../../nuxt/' + pkg.name + '/middleware'
+  },
+
+  srcDir: '../../marketplace_builder/nuxt/',
+
   /*
   ** Headers of the page
   */
   head: {
     title: pkg.name,
-    meta: [
-      { charset: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description }
-    ],
-    link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }<% if (ui === 'vuetify') { %>,
-      {
-        rel: 'stylesheet',
-        href:
-          'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons'
-      }<% } %>
-    ]
+    meta: [],
+    link: []
   },
 
   /*
@@ -61,6 +63,17 @@ module.exports = {
   ],
 
   /*
+  ** Router property options
+  */
+  router: {
+
+  /*
+  ** Middleware to run on every route
+  */
+    middleware: ['pOS-globals'] // ,'pOS-pages' 'pOS-authenticity_token',
+  },
+
+  /*
   ** Plugins to load before mounting the App
   */
   plugins: [<% if (ui === 'element-ui') { %>
@@ -75,7 +88,8 @@ module.exports = {
   */
   modules: [<% if (axios === 'yes') { %>
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',<% } %><% if (ui === 'bootstrap') { %>
+    '@nuxtjs/axios',
+    'nuxt-vuex-router-sync',<% } %><% if (ui === 'bootstrap') { %>
     // Doc: https://bootstrap-vue.js.org/docs/
     'bootstrap-vue/nuxt',<% } %><% if (ui === 'bulma') { %>
     // Doc:https://github.com/nuxt-community/modules/tree/master/packages/bulma
@@ -89,12 +103,29 @@ module.exports = {
   */
   axios: {
     // See https://axios.nuxtjs.org/options
-  },<% } %>
+    baseURL: (process.env.POS_ENV !== 'production') ? process.env.STAGING_URL + process.env.API_PREFIX : process.env.PRODUCTION_URL + process.env.API_PREFIX,
+    proxy: (process.env.NODE_ENV !== 'production') ? true : false
+  },
+  proxy: [
+    process.env.STAGING_URL + process.env.API_PREFIX
+  ],<% } %>
 
+  /*
+  ** Generated files directory
+  */
+  generate: {
+    dir: '../../marketplace_builder/assets/_nuxt'
+  },
+  
   /*
   ** Build configuration
   */
-  build: {<% if (ui === 'bulma') { %>
+  build: {
+    /*
+    ** You can extend webpack config here
+    */
+    publicPath: (process.env.POS_ENV !== 'production') ? process.env.STAGING_CDN + '/_nuxt/' : process.env.PRODUCTION_CDN + '/_nuxt/',
+    <% if (ui === 'bulma') { %>
     postcss: {
       preset: {
         features: {
@@ -114,7 +145,14 @@ module.exports = {
     /*
     ** You can extend webpack config here
     */
-    extend(config, ctx) {<% if (eslint === 'yes') { %>
+    extend(config, ctx) {
+      /*
+      ** Add support for pOS block
+      */
+      config.module.rules.push({
+        resourceQuery: /blockType=pos/,
+        loader: require.resolve("./pOS/pos-loader.js")
+      })<% if (eslint === 'yes') { %>
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
         config.module.rules.push({
@@ -124,6 +162,36 @@ module.exports = {
           exclude: /(node_modules)/
         })
       }<% } %>
+    },
+    /*
+    ** Change build directory of files
+    */
+    filenames: {
+      app: ({ isDev }) => isDev ? '[path][name].js' : 'scripts/[chunkhash].js',
+      chunk: ({ isDev }) => isDev ? '[path][name].js' : 'scripts/[chunkhash].js',
+      css: ({ isDev }) => isDev ? '[name].css' : 'styles/[contenthash].css',
+      img: ({ isDev }) => isDev ? '[path][name].[ext]' : 'images/[hash:7].[ext]',
+      font: ({ isDev }) => isDev ? '[path][name].[ext]' : 'fonts/[hash:7].[ext]',
+      video: ({ isDev }) => isDev ? '[path][name].[ext]' : 'videos/[hash:7].[ext]'
+    }
+  },
+  hooks: {
+
+    /*
+    ** Add generate script to compile for Platform OS
+    */
+    'generate:page': (page) => {
+      const pOSLoader = require('./pOS/pos-generate.js') 
+      pOSLoader(page)
+    }
+  },
+
+  /*
+    ** Turn on Dev tools
+  */
+  vue: {
+    config: {
+     devtools: false
     }
   }
-}
+}, moduleConfig(pkg) )

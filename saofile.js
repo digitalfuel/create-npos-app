@@ -18,22 +18,22 @@ module.exports = {
       message: 'Project description',
       default: `My ${superb()} Nuxt.js project`
     },
-    {
-      name: 'server',
-      message: 'Use a custom server framework',
-      type: 'list',
-      choices: [
-        'none',
-        'express',
-        'koa',
-        'adonis',
-        'hapi',
-        'feathers',
-        'micro',
-        'fastify'
-      ],
-      default: 'none'
-    },
+    // {
+    //   name: 'server',
+    //   message: 'Use a custom server framework',
+    //   type: 'list',
+    //   choices: [
+    //     'none',
+    //     'express',
+    //     'koa',
+    //     'adonis',
+    //     'hapi',
+    //     'feathers',
+    //     'micro',
+    //     'fastify'
+    //   ],
+    //   default: 'none'
+    // },
     {
       name: 'features',
       message: 'Choose features to install',
@@ -76,17 +76,17 @@ module.exports = {
       ],
       default: 'none'
     },
-    {
-      name: 'test',
-      message: 'Use a custom test framework',
-      type: 'list',
-      choices: [
-        'none',
-        'jest',
-        'ava'
-      ],
-      default: 'none'
-    },
+    // {
+    //   name: 'test',
+    //   message: 'Use a custom test framework',
+    //   type: 'list',
+    //   choices: [
+    //     'none',
+    //     'jest',
+    //     'ava'
+    //   ],
+    //   default: 'none'
+    // },
     {
       name: 'mode',
       message: 'Choose rendering mode',
@@ -156,37 +156,37 @@ module.exports = {
       })
     }
 
-    if (this.answers.test !== 'none') {
-      actions.push({
-        type: 'add',
-        files: '**',
-        templateDir: `template/frameworks/${this.answers.test}`
-      })
-    }
+    // if (this.answers.test !== 'none') {
+    //   actions.push({
+    //     type: 'add',
+    //     files: '**',
+    //     templateDir: `template/frameworks/${this.answers.test}`
+    //   })
+    // }
 
-    if (this.answers.server !== 'none') {
-      if (this.answers.server === 'adonis') {
-        const files = {}
-        for (const action of actions) {
-          const options = { cwd: join(rootDir, action.templateDir), dot: true }
-          for (const file of glob.sync(`*`, options)) {
-            files[file] = `resources/${file}`
-          }
-        }
-        files['nuxt.config.js'] = 'config/nuxt.js'
+    // if (this.answers.server !== 'none') {
+    //   if (this.answers.server === 'adonis') {
+    //     const files = {}
+    //     for (const action of actions) {
+    //       const options = { cwd: join(rootDir, action.templateDir), dot: true }
+    //       for (const file of glob.sync(`*`, options)) {
+    //         files[file] = `resources/${file}`
+    //       }
+    //     }
+    //     files['nuxt.config.js'] = 'config/nuxt.js'
 
-        actions.push({
-          type: 'move',
-          patterns: files
-        })
-      }
-      actions.push({
-        type: 'add',
-        files: '**',
-        templateDir: `template/frameworks/${this.answers.server}`
-      })
-    }
-
+    //     actions.push({
+    //       type: 'move',
+    //       patterns: files
+    //     })
+    //   }
+    //   actions.push({
+    //     type: 'add',
+    //     files: '**',
+    //     templateDir: `template/frameworks/${this.answers.server}`
+    //   })
+    // }
+    
     actions.push({
       type: 'add',
       files: '*',
@@ -203,6 +203,13 @@ module.exports = {
         '_package.json': 'package.json',
         '_.eslintrc.js': '.eslintrc.js'
       }
+    })
+    
+    // PlatformOS Marketplace Builder
+    actions.push({
+      type: 'add',
+      files: '**',
+      templateDir: `template/marketplace_builder`
     })
 
     return actions
