@@ -130,8 +130,7 @@ module.exports = {
       axios: axios ? 'yes' : 'no',
       esm,
       server: 'none',
-      test: 'none',
-      stagingUrl
+      test: 'none'
     }
   },
   actions() {

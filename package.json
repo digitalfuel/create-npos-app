@@ -1,6 +1,6 @@
 {
   "name": "create-npos-app",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Create a Nuxt.js App for platform OS in seconds.",
   "bin": "cli.js",
   "files": [
