@@ -50,11 +50,11 @@ module.exports = {
         {
           name: 'Prettier',
           value: 'prettier'
-        },
-        {
-          name: 'Axios',
-          value: 'axios'
-        }
+        }//,
+        // {
+        //   name: 'Axios',
+        //   value: 'axios'
+        // }
       ],
       default: []
     },
@@ -119,6 +119,8 @@ module.exports = {
     const prettier = this.answers.features.includes('prettier')
     const axios = this.answers.features.includes('axios')
     const esm = this.answers.server === 'none'
+    const marketplaceKit = JSON.parse('../.marketplace-kit')
+    const stagingUrl = marketplaceKit.staging.url
 
     return {
       edge,
@@ -128,7 +130,8 @@ module.exports = {
       axios: axios ? 'yes' : 'no',
       esm,
       server: 'none',
-      test: 'none'
+      test: 'none',
+      stagingUrl
     }
   },
   actions() {
@@ -211,7 +214,14 @@ module.exports = {
     actions.push({
       type: 'add',
       files: '**',
-      templateDir: `template/marketplace_builder`
+      templateDir: `template/platformos`
+    })
+
+    actions.push({
+      type: 'move',
+      patterns: {
+        'marketplace_builder': '../../'
+      }
     })
 
     return actions
@@ -254,5 +264,6 @@ module.exports = {
       console.log(`\t${this.answers.pm} run test`)
     }
     console.log()
+    console.log(stagingUrl)
   }
 }

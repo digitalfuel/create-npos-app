@@ -1,6 +1,6 @@
 {
   "name": "create-npos-app",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Create a Nuxt.js App for platform OS in seconds.",
   "bin": "cli.js",
   "files": [
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^0.0.1",
-    "ava": "^1.2.1",
+    "ava": "^1.4.1",
     "eslint": "^5.13.0",
     "eslint-config-standard": "^12.0.0",
     "eslint-plugin-import": "^2.16.0",
