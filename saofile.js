@@ -119,8 +119,8 @@ module.exports = {
     const prettier = this.answers.features.includes('prettier')
     const axios = this.answers.features.includes('axios')
     const esm = this.answers.server === 'none'
-    const marketplaceKit = JSON.parse('./.marketplace-kit')
-    const stagingUrl = marketplaceKit.staging.url
+    // const marketplaceKit = JSON.parse('./.marketplace-kit')
+    // const stagingUrl = marketplaceKit.staging.url
 
     return {
       edge,
@@ -264,6 +264,6 @@ module.exports = {
       console.log(`\t${this.answers.pm} run test`)
     }
     console.log()
-    console.log(stagingUrl)
+    // console.log(stagingUrl)
   }
 }
