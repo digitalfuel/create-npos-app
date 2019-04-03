@@ -1,4 +1,6 @@
-const { join } = require('path')
+const fs = require('fs');
+const path = require('path')
+// const { join } = require('path')
 const superb = require('superb')
 const glob = require('glob')
 const spawn = require('cross-spawn')
@@ -119,8 +121,6 @@ module.exports = {
     const prettier = this.answers.features.includes('prettier')
     const axios = this.answers.features.includes('axios')
     const esm = this.answers.server === 'none'
-    // const marketplaceKit = JSON.parse('./.marketplace-kit')
-    // const stagingUrl = marketplaceKit.staging.url
 
     return {
       edge,
@@ -223,6 +223,19 @@ module.exports = {
       }
     })
 
+    const marketplaceKitPath = path.resolve(this.outDir, '../../.marketplace-kit')
+    const marketplaceKit = JSON.parse(fs.readFileSync(marketplaceKitPath, 'utf-8'))
+    const stagingUrl = marketplaceKit.staging.url
+
+    actions.push({
+      type: 'modify',
+      files: '.env',
+      handler(data) {
+        data = data.replace("stagingUrl", stagingUrl);
+        return data
+      }
+    })
+
     return actions
   },
   async completed() {
@@ -233,7 +246,7 @@ module.exports = {
     const isNewFolder = this.outDir !== process.cwd()
     const cd = () => {
       if (isNewFolder) {
-        console.log(`\t${this.chalk.cyan('cd')} ${this.outFolder}`)
+        console.log(`\t${this.chalk.cyan('cd')} nuxt/${this.outFolder}`)
       }
     }
 
@@ -254,15 +267,15 @@ module.exports = {
     console.log(`\t${this.answers.pm} run dev\n`)
     console.log(this.chalk.bold(`  To build & start for production:\n`))
     cd()
-    console.log(`\t${this.answers.pm} run build`)
-    console.log(`\t${this.answers.pm} start`)
+    console.log(`\t${this.answers.pm} run staging`)
+    console.log(`\t${this.answers.pm} run production`)
+    // console.log(`\t${this.answers.pm} start`)
 
-    if (this.answers.test !== 'none') {
-      console.log(this.chalk.bold(`\n  To test:\n`))
-      cd()
-      console.log(`\t${this.answers.pm} run test`)
-    }
+    // if (this.answers.test !== 'none') {
+    //   console.log(this.chalk.bold(`\n  To test:\n`))
+    //   cd()
+    //   console.log(`\t${this.answers.pm} run test`)
+    // }
     console.log()
-    // console.log(stagingUrl)
   }
 }

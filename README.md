@@ -16,19 +16,19 @@
 Make sure you have [npx](https://www.npmjs.com/package/npx) installed (`npx` is shipped by default since [npm](https://www.npmjs.com/get-npm) `5.2.0`)
 
 ```bash
-npx create-npos-app <my-project>
+npx create-npos-app nuxt/<my-project>
 ```
 
 Or starting with npm v6.1 you can do:
 
 ```bash
-npm init npos-app <my-project>
+npm init npos-app nuxt/<my-project>
 ```
 
 Or with [yarn](https://yarnpkg.com/en/):
 
 ```bash
-yarn create npos-app <my-project>
+yarn create npos-app nuxt/<my-project>
 ```
 
 ## Features :tada:
@@ -55,19 +55,19 @@ yarn create npos-app <my-project>
 To install [nuxt-edge](https://www.npmjs.com/package/nuxt-edge) instead of [nuxt](https://www.npmjs.com/package/nuxt), add the command line flag `--edge`:
 
 ```bash
-npx create-npos-app <my-project> --edge
+npx create-npos-app nuxt/<my-project> --edge
 ```
 
 Or
 
 ```bash
-npm init npos-app <my-project> --edge
+npm init npos-app nuxt/<my-project> --edge
 ```
 
 Or
 
 ```bash
-yarn create npos-app <my-project> --edge
+yarn create npos-app nuxt/<my-project> --edge
 ```
 
 ## Credits
