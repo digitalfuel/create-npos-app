@@ -219,7 +219,7 @@ module.exports = {
     actions.push({
       type: 'move',
       patterns: {
-        'marketplace_builder': '../../'
+        'marketplace_builder': '../../marketplace_builder'
       }
     })
 
