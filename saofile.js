@@ -119,7 +119,7 @@ module.exports = {
     const pwa = this.answers.features.includes('pwa')
     const linter = this.answers.features.includes('linter')
     const prettier = this.answers.features.includes('prettier')
-    const axios = this.answers.features.includes('axios')
+    // const axios = this.answers.features.includes('axios')
     const esm = this.answers.server === 'none'
 
     return {
@@ -127,7 +127,8 @@ module.exports = {
       pwa: pwa ? 'yes' : 'no',
       eslint: linter ? 'yes' : 'no',
       prettier: prettier ? 'yes' : 'no',
-      axios: axios ? 'yes' : 'no',
+      // axios: axios ? 'yes' : 'no',
+      axios: 'yes',
       esm,
       server: 'none',
       test: 'none'
@@ -210,28 +211,44 @@ module.exports = {
     })
     
     // PlatformOS Marketplace Builder
-    actions.push({
-      type: 'add',
-      files: '**',
-      templateDir: `template/platformos`
-    })
+    const marketplaceBuilderPath = path.resolve(this.outDir, '../../marketplace_builder')
+    if (!fs.existsSync(marketplaceBuilderPath)) {
+      actions.push({
+        type: 'add',
+        files: '**',
+        templateDir: `template/platformos`
+      })
 
-    actions.push({
-      type: 'move',
-      patterns: {
-        'marketplace_builder': '../../marketplace_builder'
-      }
-    })
+      actions.push({
+        type: 'move',
+        patterns: {
+          'marketplace_builder': '../../marketplace_builder'
+        }
+      })
+    }
 
     const marketplaceKitPath = path.resolve(this.outDir, '../../.marketplace-kit')
-    const marketplaceKit = JSON.parse(fs.readFileSync(marketplaceKitPath, 'utf-8'))
-    const stagingUrl = marketplaceKit.staging.url
+    let marketplaceKit
+    try {
+      marketplaceKit = JSON.parse(fs.readFileSync(marketplaceKitPath, 'utf-8'))
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        console.log('ERROR: .marketplace-kit not found! See https://documentation.platform-os.com/get-started/deploying-syncing-changes Step 2: Authenticate environments. Complete this step and try again.')
+        process.exit()
+      } else {
+        throw err
+      }
+    }
+
+    const stagingUrl = 'staging' in marketplaceKit ? marketplaceKit.staging.url : 'stagingUrl'
+    const productionUrl = 'production' in marketplaceKit ? marketplaceKit.production.url : 'productionUrl'
 
     actions.push({
       type: 'modify',
       files: '.env',
       handler(data) {
-        data = data.replace("stagingUrl", stagingUrl);
+        data = data.replace("stagingUrl", stagingUrl)
+        data = data.replace("productionUrl", productionUrl)
         return data
       }
     })
@@ -265,7 +282,7 @@ module.exports = {
     console.log(this.chalk.bold(`  To get started:\n`))
     cd()
     console.log(`\t${this.answers.pm} run dev\n`)
-    console.log(this.chalk.bold(`  To build & start for production:\n`))
+    console.log(this.chalk.bold(`  To generate for staging & production:\n`))
     cd()
     console.log(`\t${this.answers.pm} run staging`)
     console.log(`\t${this.answers.pm} run production`)

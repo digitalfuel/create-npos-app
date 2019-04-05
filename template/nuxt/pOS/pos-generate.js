@@ -17,7 +17,7 @@ module.exports = function(page) {
   const $ = cheerio.load(page.html, { normalizeWhitespace: false, decodeEntities: false })
    
   // load pos block into Cheerio
-  const vuePath = ('../marketplace_builder/nuxt/pages' + pageFile + '.vue' )  
+  const vuePath = ('../../marketplace_builder/nuxt/pages' + pageFile + '.vue' )  
   const pos = cheerio.load(fs.readFileSync(vuePath), { })
 
   // PAGE HTML //
@@ -118,14 +118,14 @@ module.exports = function(page) {
 
    
   // VARIABLE LIQUID PARTIAL //
-  const partialPath = '../marketplace_builder/views/partials/pages'
+  const partialPath = '../../marketplace_builder/views/partials/pages'
   const partialFile = partialPath + pageFile + '.liquid'
 
   const partialContent = posContents[2].trim()
   
   
   // API LIQUID JSON //
-  const jsonPath = '../marketplace_builder/views/pages'
+  const jsonPath = '../../marketplace_builder/views/pages'
   const jsonFile = jsonPath + pageFile + '.json.liquid'
 
   let jsonYAML = posContents[1].replace('slug: ','slug: api/pages/' )
