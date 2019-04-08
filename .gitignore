@@ -13,5 +13,8 @@ coverage
 *.code-workspace
 .idea
 
+# NPM
+*.tgz
+
 # Misc
 .DS_Store
