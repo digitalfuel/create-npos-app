@@ -124,7 +124,7 @@ module.exports = () => merge({
     /*
     ** You can extend webpack config here
     */
-    publicPath: (process.env.POS_ENV !== 'production') ? process.env.STAGING_CDN + '/_nuxt/' : process.env.PRODUCTION_CDN + '/_nuxt/',
+    publicPath: (process.env.POS_ENV !== 'production') ? process.env.STAGING_CDN + '_nuxt/' : process.env.PRODUCTION_CDN + '_nuxt/',
     <% if (ui === 'bulma') { %>
     postcss: {
       preset: {
