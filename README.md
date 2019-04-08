@@ -12,7 +12,7 @@ Nuxt integration into PlatformOS
 
 - 📘 Nuxt Documentation: [https://nuxtjs.org](https://nuxtjs.org)
 
-## Usage
+## Installation
 1. Create a PlatformOS instance at https://partners.platform-os.com/
    
 2. Setup your PlatformOS instance ready to deploy https://documentation.platform-os.com/get-started
@@ -34,8 +34,9 @@ Nuxt integration into PlatformOS
     ```bash
     yarn create npos-app nuxt/<my-project>
     ```
+4. Run `marketplace-kit deploy <environment>` to deploy markekplace_builder to PlatformOS. Note: This can also be copied from the partner portal under the required instances command cheet sheet.
 
-10. Update enviroment variable CDN
+5.  Update enviroment variable CDN
    
     Currently the only way to get the CDN's url is to use this liquid `{{ '' | asset_url }}`. To make this easier for your staging instance run `marketplace-kit sync staging` save marketplace_builder/views/pages/index.html.liquid. Next view your staging instance and copy the CDN URL. Then locate the .env file in the yourProject/nuxt/<my-project> update the stagingCDN variable to your instance CDN. 
     For a production site you will currently have to manually produce find and replace the .env variable.
@@ -44,6 +45,14 @@ Note: Run all commands discussed in this tutorial in the project root directory,
 
 Note: After installation, run nuxt commands e.g. `npm run dev` from the relavent directory i.e. yourProject/nuxt/<my-project>
 
+## Usage
+
+1. Change directory `cd nuxt/<my-project>`
+2. Dev, Staging or Production 
+ - Run the dev server with `npm run dev`
+ - Generate for staging with `npm run staging` NOTE: You must be synced to your Staging instance `marketplace-kit sync staging`
+ - Generate for production with `npm run production` NOTE: You must be synced to your Staging instance `marketplace-kit sync production`
+ 
 ## Features :tada:
 
 1. Check the features needed for your project:
