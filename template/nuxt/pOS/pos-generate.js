@@ -58,26 +58,6 @@ module.exports = function(page) {
     contextLog()
   }
 
-
-  const getState = () => {  
-    // let __nuxt__ = $('script:contains("window.__NUXT__")').contents().first().text()
-    // __nuxt__ = __nuxt__.replace('window.__NUXT__=','')
-
-    // __nuxt__ = JSON.parse(JSON.stringify({__nuxt__}))
-
-    // const obj = {state:{globals:{},pages_index:{name:"test Name"},pages_test:{}}}
-
-    // let nuxtState = new Map(Object.entries(obj))
-    //     nuxtState = nuxtState.get('state')
-
-    // let includePartials = ''
-    //     Object.keys(nuxtState).forEach(key => {
-    //       let includeKey = key.replace('_','/')
-    //       includePartials = includePartials + '{%- include "' + includeKey + '" -%}'
-    //     })
-  }
-
-
   // Get pos block content
   let posContents = pos('pos').contents().first().text().trimLeft()
   posContents = posContents.split('---')
