@@ -89,16 +89,16 @@ module.exports = {
     //   ],
     //   default: 'none'
     // },
-    {
-      name: 'mode',
-      message: 'Choose rendering mode',
-      type: 'list',
-      choices: [
-        { name: 'Universal', value: 'universal' },
-        { name: 'Single Page App', value: 'spa' }
-      ],
-      default: 'universal'
-    },
+    // {
+    //   name: 'mode',
+    //   message: 'Choose rendering mode',
+    //   type: 'list',
+    //   choices: [
+    //     { name: 'Universal', value: 'universal' },
+    //     { name: 'Single Page App', value: 'spa' }
+    //   ],
+    //   default: 'universal'
+    // },
     {
       name: 'author',
       type: 'string',
@@ -131,7 +131,8 @@ module.exports = {
       axios: 'yes',
       esm,
       server: 'none',
-      test: 'none'
+      test: 'none',
+      mode: 'universal'
     }
   },
   actions() {
