@@ -1,4 +1,4 @@
-# Create NpOS App
+# Create nPOS App
 Nuxt integration into PlatformOS
 <!-- [![NPM version](https://img.shields.io/npm/v/create-nuxt-app.svg?style=flat)](https://npmjs.com/package/create-nuxt-app)
 [![NPM downloads](https://img.shields.io/npm/dm/create-nuxt-app.svg?style=flat)](https://npmjs.com/package/create-nuxt-app)
@@ -19,21 +19,32 @@ Nuxt integration into PlatformOS
 
 3. Make sure you have [npx](https://www.npmjs.com/package/npx) installed (`npx` is shipped by default since [npm](https://www.npmjs.com/get-npm) `5.2.0`)
 
+    #### To create a platformOS core project:
+
     ```bash
-    npx create-npos-app nuxt/<my-project>
+    npx create-npos-app <my-project> p
     ```
 
     Or starting with npm v6.1 you can do:
 
     ```bash
-    npm init npos-app nuxt/<my-project>
+    npm init create-npos-app <my-project> p
     ```
 
     Or with [yarn](https://yarnpkg.com/en/):
 
     ```bash
-    yarn create npos-app nuxt/<my-project>
+    yarn create-npos-app <my-project> p
     ```
+
+    #### To create a platformOS module:
+
+    ```bash
+    npx create-npos-app <my-project>
+    ```
+
+    ##### By default modules are created not a project. Adding 'p' or 'project' after \<my-project> creates a project directly in marketplace_builder.
+
 4. Run `marketplace-kit deploy <environment>` to deploy markekplace_builder to PlatformOS. Note: This can also be copied from the partner portal under the required instances command cheet sheet.
 
 5.  Update enviroment variable CDN

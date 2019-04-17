@@ -1,6 +1,14 @@
-const cheerio = require('cheerio')
 const fs = require('fs')
-const minify = require('html-minifier').minify
+
+const installPath = process.env.POS_INSTALL_PATH
+const nodePath = './' + installPath + '/node_modules/'
+const cheerio = require( nodePath + 'cheerio')
+const minify = require( nodePath + 'html-minifier').minify
+const pkg = require( './' + installPath + '/package')
+const installType = (installPath.startsWith('modules/')) 
+      ? 'module'
+      : 'package'
+
 
 module.exports = function(page) {
 
@@ -11,14 +19,41 @@ module.exports = function(page) {
   
   // Set page file url without extension
   let pageFile = ( page.path.replace('.html', '') )
-      pageFile = pageFile.replace(/\\/g,'/')
+  pageFile = pageFile.replace(/\\/g,'/')
   
   // Load page HTML into Cheerio
   const $ = cheerio.load(page.html, { normalizeWhitespace: false, decodeEntities: false })
-   
+  
   // load pos block into Cheerio
-  const vuePath = ('../../marketplace_builder/nuxt/pages' + pageFile + '.vue' )  
+  const vuePath = (installType !== 'module')
+        ? '../../marketplace_builder/nuxt_src/pages' + pageFile + '.vue'
+        : '../../../marketplace_builder/' + installPath + '/nuxt_src/pages' + pageFile + '.vue'
   const pos = cheerio.load(fs.readFileSync(vuePath), { })
+
+  // Get pos block content
+  let posContents = pos('pos').contents().first().text().trimLeft()
+  posContents = posContents.split('---')
+  
+  let posPage = posContents[0].replace(/\r?\n/g, ";").replace(/ /g,'')
+
+  posPage = posPage.split(';')
+
+  let private = posPage[0]
+      private = private.split('=')
+      private = private[1]
+
+  privacy = private || 'true'
+  
+  // Create priacy path to public or private
+  let privacyPath = ( privacy !== 'true' ) ? 'public/' : 'private/' 
+  // Create module path
+  let modulePath = 'modules/' + pkg.name + '/'
+
+  if (installType !== 'module') {
+    privacyPath = ''
+    modulePath = ''
+  }
+
 
   // PAGE HTML //
   
@@ -31,7 +66,7 @@ module.exports = function(page) {
 
       if (~vueUrl.indexOf("assets/_nuxt/")) {
         let replace = vueUrl.split('assets/_nuxt/')
-        let asset_url = "{{ '_nuxt/" + replace[1] + "' | asset_url }}"
+        let asset_url = "{{ '" + modulePath + "_nuxt/" + replace[1] + "' | asset_url }}"
 
         $(this).attr(attr, asset_url)
       }
@@ -58,19 +93,15 @@ module.exports = function(page) {
     contextLog()
   }
 
-  // Get pos block content
-  let posContents = pos('pos').contents().first().text().trimLeft()
-  posContents = posContents.split('---')
-
   // Page Liquid Contents
   let includeGlobals = ''
   
   if ( alwaysIncludeGlobals === 'true' ) {
-    includeGlobals = '{%- include "globals" -%}'
+    includeGlobals = '{%- include "' + modulePath + 'globals" -%}'
   }
   
   // generate plaftormOS page frontMatter
-  const frontMatter_Liquid = '---' + posContents[1] + '---\n' + includeGlobals + '{%- include "pages' + pageFile + '" -%}\n'
+  const frontMatter_Liquid = '---' + posContents[1] + '---\n' + includeGlobals + '{%- include "' + modulePath + 'pages' + pageFile + '" -%}\n'
 
   // HTML minification
   let pageHTML
@@ -98,22 +129,31 @@ module.exports = function(page) {
 
    
   // VARIABLE LIQUID PARTIAL //
-  const partialPath = '../../marketplace_builder/views/partials/pages'
+  const partialPath = (installType !== 'module')
+        ? '../../marketplace_builder/views/partials/pages'
+        : '../../../marketplace_builder/' + installPath + '/' + privacyPath + 'views/partials/pages'
   const partialFile = partialPath + pageFile + '.liquid'
 
   const partialContent = posContents[2].trim()
   
   
   // API LIQUID JSON //
-  const jsonPath = '../../marketplace_builder/views/pages'
+  const jsonPath = (installType !== 'module')
+        ? '../../marketplace_builder/views/pages'
+        : '../../../marketplace_builder/' + installPath + '/' + privacyPath + 'views/pages'
   const jsonFile = jsonPath + pageFile + '.json.liquid'
 
   let jsonYAML = posContents[1].replace('slug: ','slug: api/pages/' )
       jsonYAML = jsonYAML.replace('slug: api/pages//', 'slug: api/pages/index')
   
+  let pagesStr = pageFile.replace(/\//g, '\-')
+  let pagesStrEnd = ( pagesStr.lastIndexOf('-index') !== -1 ) ? pagesStr.lastIndexOf('-index') : pagesStr.length
+      pagesStrEnd = ( pagesStrEnd === 0 ) ? 6 : pagesStrEnd
+      pagesStr = pagesStr.substr(0, pagesStrEnd)
+
   const jsonContent = '---' + jsonYAML + '---\n'
-      + '{%- include "pages' + pageFile + '" -%}\n'
-      + '{{ context.exports.pages' + pageFile.replace(/\//g, '\_') + ' | json }}'
+      + '{%- include "' + modulePath + 'pages' + pageFile + '" -%}\n'
+      + '{{ context.exports.pages' + pagesStr + ' | json }}'
 
 
   // WRTIE FILES TO marketplace_builder

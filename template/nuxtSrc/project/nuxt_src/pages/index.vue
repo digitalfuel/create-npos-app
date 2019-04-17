@@ -1,10 +1,11 @@
 <pos>
+private = true
 ---
 slug: /
 ---
 {%- assign description = 'Nuxt PlatformOS intergration' -%}
 
-{%- export description namespace: "pages_index" -%}
+{%- export description namespace: "pages-index" -%}
 </pos>
 
 <template>
@@ -43,22 +44,12 @@ export default {
     Logo
   },
   computed: {
-    ...mapState('pages_index', {
+    ...mapState('pages-index', {
       description: 'description',
     }),
     ...mapState('globals', {
       company: 'company'
     })
-  },
-  fetch ({ store, route, $axios }) {
-
-    return $axios.$get( 'pages/' + route.name + '/index.json')
-      .then( res => {
-      
-        store.commit('pages_' + route.name + '/pOS', res )
-
-      })
-
   }
 
 }

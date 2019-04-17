@@ -7,14 +7,16 @@ import pkg from './package'
 const { resolve } = require('path')
 const pkg = require('../package')
 <%} else { -%>
-  const pkg = require('./package')
-  const merge = require('webpack-merge')
-  const moduleConfig = require('../../marketplace_builder/nuxt/nuxt.config.js')
-  require('dotenv').config()
-  <% } -%>
+const pkg = require('./package')
+const merge = require('webpack-merge')
+<% if ( installPath.startsWith("modules/") ) { -%>
+const config = require('../../../marketplace_builder/modules/' + pkg.name + '/nuxt_src/nuxt.config.js')<%} else { -%>
+const config = require('../../marketplace_builder/nuxt_src/nuxt.config.js')<% } %>
+<% if ( installPath.startsWith("modules/") ) { -%>
+require('dotenv').config({ path: '../../../.env' })<%} else { -%>
+require('dotenv').config({ path: '../../.env' })<% } %><% } -%>
 <% if (!esm) { -%>
-<% if (ui === 'vuetify') { %>const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')<% } %>
-<% } -%>
+<% if (ui === 'vuetify') { %>const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')<% } %><% } -%>
 
 <% if (esm) { -%>
 export default {
@@ -31,10 +33,16 @@ module.exports = () => merge({
   ** Revised directories
   */
   dir: {
-    middleware: '../../nuxt/' + pkg.name + '/middleware'
+  <% if ( installPath.startsWith("modules/") ) { -%>
+  middleware: '../../../../nuxt/modules/' + pkg.name + '/middleware'
+  <%} else { -%>
+  middleware: '../../nuxt/' + pkg.name + '/middleware'<% } %>
   },
 
-  srcDir: '../../marketplace_builder/nuxt/',
+<% if ( installPath.startsWith("modules/") ) { -%>
+  srcDir: '../../../marketplace_builder/modules/' + pkg.name + '/nuxt_src/',
+<%} else { -%>
+  srcDir: '../../marketplace_builder/nuxt_src/',<% } %>
 
   /*
   ** Headers of the page
@@ -70,7 +78,7 @@ module.exports = () => merge({
   /*
   ** Middleware to run on every route
   */
-    middleware: ['pOS-globals'] // ,'pOS-pages' 'pOS-authenticity_token',
+    middleware: ['pOS-globals','pOS-pages'] // 'pOS-authenticity_token',
   },
 
   /*
@@ -114,7 +122,10 @@ module.exports = () => merge({
   ** Generated files directory
   */
   generate: {
-    dir: '../../marketplace_builder/assets/_nuxt'
+  <% if ( installPath.startsWith("modules/") ) { -%>
+  dir: '../../../marketplace_builder/modules/' + pkg.name + '/private/assets/_nuxt'
+  <%} else { -%>
+  dir: '../../marketplace_builder/assets/_nuxt'<% } %>
   },
   
   /*
@@ -151,7 +162,10 @@ module.exports = () => merge({
       */
       config.module.rules.push({
         resourceQuery: /blockType=pos/,
-        loader: require.resolve("./pOS/pos-loader.js")
+        <% if ( installPath.startsWith("modules/") ) { -%>
+        loader: require.resolve("../../pos.loader.js")
+        <%} else { -%>
+        loader: require.resolve("../pos.loader.js")<% } %>
       })<% if (eslint === 'yes') { %>
       // Run ESLint on save
       if (ctx.isDev && ctx.isClient) {
@@ -181,7 +195,10 @@ module.exports = () => merge({
     ** Add generate script to compile for Platform OS
     */
     'generate:page': (page) => {
-      const pOSLoader = require('./pOS/pos-generate.js') 
+      <% if ( installPath.startsWith("modules/") ) { -%>
+      const pOSLoader = require('../../pos.generate.js')
+      <%} else { -%>
+      const pOSLoader = require('../pos.generate.js')<% } %>
       pOSLoader(page)
     }
   },
@@ -194,4 +211,4 @@ module.exports = () => merge({
      devtools: false
     }
   }
-}, moduleConfig(pkg) )
+}, config(pkg) )

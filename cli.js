@@ -4,7 +4,9 @@ const sao = require('sao')
 
 const generator = path.resolve(__dirname, './')
 // In a custom directory or current directory
-const outDir = path.resolve(process.argv[2] || '.')
+const outDir = process.argv[3] === 'project' || process.argv[3] === 'p' 
+? path.resolve('nuxt/' + process.argv[2] || '.')
+: path.resolve('nuxt/modules/' + process.argv[2] || '.')
 
 console.log(`> Generating Nuxt.js project in ${outDir}`)
 

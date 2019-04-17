@@ -1,5 +1,5 @@
 export const state = () => ({
-    description: '{{ context.exports.pages_index.description }}'
+    description: '{{ context.exports.pages-nuxt.description }}'
 })
 
 export const mutations = {

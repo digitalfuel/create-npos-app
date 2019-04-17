@@ -6,8 +6,6 @@ const glob = require('glob')
 const spawn = require('cross-spawn')
 const validate = require('validate-npm-package-name')
 
-const rootDir = __dirname
-
 module.exports = {
   prompts: [
     {
@@ -109,7 +107,7 @@ module.exports = {
     {
       name: 'pm',
       message: 'Choose a package manager',
-      choices: ['npm', 'yarn'],
+      choices: ['npm', 'pnpm', 'yarn'],
       type: 'list',
       default: 'npm'
     }
@@ -121,7 +119,10 @@ module.exports = {
     const prettier = this.answers.features.includes('prettier')
     // const axios = this.answers.features.includes('axios')
     const esm = this.answers.server === 'none'
-
+    // const install = process.argv[3] || 'module'
+    const installType = (this.outDir.indexOf('nuxt\\modules\\')) !== -1 ? 'module' : 'project'
+    const installPath = (installType === 'module') ? 'modules/' + this.outFolder : this.outFolder
+    
     return {
       edge,
       pwa: pwa ? 'yes' : 'no',
@@ -132,7 +133,9 @@ module.exports = {
       esm,
       server: 'none',
       test: 'none',
-      mode: 'universal'
+      mode: 'universal',
+      // install: install.startsWith('p') ? 'project' : 'module'
+      installPath: installPath
     }
   },
   actions() {
@@ -145,10 +148,13 @@ module.exports = {
     })
     validation.errors && validation.errors.length && process.exit(1)
 
+    const installType = (this.outDir.indexOf('nuxt\\modules\\')) !== -1 ? 'module' : 'project'
+    const installModulePrefix = (installType === 'module') ? '../' : ''
+
     const actions = [{
       type: 'add',
       files: '**',
-      templateDir: 'template/nuxt',
+      templateDir: 'template/nuxtCore',
       filters: {
         'static/icon.png': 'features.includes("pwa")'
       }
@@ -161,37 +167,6 @@ module.exports = {
         templateDir: `template/frameworks/${this.answers.ui}`
       })
     }
-
-    // if (this.answers.test !== 'none') {
-    //   actions.push({
-    //     type: 'add',
-    //     files: '**',
-    //     templateDir: `template/frameworks/${this.answers.test}`
-    //   })
-    // }
-
-    // if (this.answers.server !== 'none') {
-    //   if (this.answers.server === 'adonis') {
-    //     const files = {}
-    //     for (const action of actions) {
-    //       const options = { cwd: join(rootDir, action.templateDir), dot: true }
-    //       for (const file of glob.sync(`*`, options)) {
-    //         files[file] = `resources/${file}`
-    //       }
-    //     }
-    //     files['nuxt.config.js'] = 'config/nuxt.js'
-
-    //     actions.push({
-    //       type: 'move',
-    //       patterns: files
-    //     })
-    //   }
-    //   actions.push({
-    //     type: 'add',
-    //     files: '**',
-    //     templateDir: `template/frameworks/${this.answers.server}`
-    //   })
-    // }
     
     actions.push({
       type: 'add',
@@ -201,34 +176,20 @@ module.exports = {
         '.prettierrc': 'features.includes("prettier")'
       }
     })
-
+    
     actions.push({
       type: 'move',
       patterns: {
-        gitignore: '.gitignore',
+        // gitignore: '.gitignore',
         '_package.json': 'package.json',
-        '_.eslintrc.js': '.eslintrc.js'
+        '_.eslintrc.js': '.eslintrc.js',
+        'pos.generate.js': installModulePrefix + '../pos.generate.js',
+        'pos.loader.js': installModulePrefix + '../pos.loader.js'
       }
     })
     
     // PlatformOS Marketplace Builder
-    const marketplaceBuilderPath = path.resolve(this.outDir, '../../marketplace_builder')
-    if (!fs.existsSync(marketplaceBuilderPath)) {
-      actions.push({
-        type: 'add',
-        files: '**',
-        templateDir: `template/platformos`
-      })
-
-      actions.push({
-        type: 'move',
-        patterns: {
-          'marketplace_builder': '../../marketplace_builder'
-        }
-      })
-    }
-
-    const marketplaceKitPath = path.resolve(this.outDir, '../../.marketplace-kit')
+    const marketplaceKitPath = path.resolve(this.outDir, installModulePrefix + '../../.marketplace-kit')
     let marketplaceKit
     try {
       marketplaceKit = JSON.parse(fs.readFileSync(marketplaceKitPath, 'utf-8'))
@@ -241,12 +202,96 @@ module.exports = {
       }
     }
 
+    const marketplaceBuilderPath = path.resolve(this.outDir, installModulePrefix + '../../marketplace_builder/')
+    const modulePath = path.resolve(marketplaceBuilderPath + 'modules/' + this.answers.name + '/nuxt_src')
+    const projectPath = path.resolve(marketplaceBuilderPath + 'nuxt_src')
+    const gitignorePath = path.resolve(this.outDir, installModulePrefix + '../../.gitignore')
+    const dotenvPath = path.resolve(this.outDir, installModulePrefix + '../../.env')
+
+    if ( installType === 'module' && !fs.existsSync(modulePath) ) {
+      
+      actions.push({
+        type: 'add',
+        files: '**',
+        templateDir: `template/platformos/module`
+      })
+      
+      actions.push({
+        type: 'move',
+        patterns: {
+          'private': installModulePrefix + '../../marketplace_builder/modules/' + this.answers.name + '/private',
+          'public': installModulePrefix + '../../marketplace_builder/modules/' + this.answers.name + '/public'
+        }
+      }) 
+      
+      actions.push({
+        type: 'add',
+        files: '**',
+        templateDir: `template/nuxtSrc/module`
+      })
+
+      actions.push({
+        type: 'move',
+        patterns: {
+          'nuxt_src': installModulePrefix + '../../marketplace_builder/modules/' + this.answers.name + '/nuxt_src'
+        }
+      })
+
+    } else if ( installType === 'project' && !fs.existsSync(projectPath) ) {
+      actions.push({
+        type: 'add',
+        files: '**',
+        templateDir: `template/platformos/project`
+      })
+      
+      actions.push({
+        type: 'move',
+        patterns: {
+          'marketplace_builder': '../../marketplace_builder',
+        }
+      }) 
+      
+      actions.push({
+        type: 'add',
+        files: '**',
+        templateDir: `template/nuxtSrc/project`
+      })
+
+      actions.push({
+        type: 'move',
+        patterns: {
+          'nuxt_src': '../../marketplace_builder/nuxt_src'
+        }
+      })
+
+    } else {
+      console.log(this.chalk.bold(`\n${this.chalk.red('ERROR:')} Name already exist. Try again using a different name.`))
+      process.exit()
+    }
+    
+    if (!fs.existsSync(gitignorePath)) {      
+      actions.push({
+        type: 'move',
+        patterns: {
+          gitignore: installModulePrefix + '../../.gitignore'
+        }
+      })
+    }
+    
+    if (!fs.existsSync(dotenvPath)) {
+      actions.push({
+        type: 'move',
+        patterns: {
+          '.env': installModulePrefix + '../../.env'
+        }
+      })
+    }
+
     const stagingUrl = 'staging' in marketplaceKit ? marketplaceKit.staging.url : 'stagingUrl'
     const productionUrl = 'production' in marketplaceKit ? marketplaceKit.production.url : 'productionUrl'
-
     actions.push({
       type: 'modify',
-      files: '.env',
+      files: installModulePrefix + '../../.env',
       handler(data) {
         data = data.replace("stagingUrl", stagingUrl)
         data = data.replace("productionUrl", productionUrl)
@@ -261,10 +306,11 @@ module.exports = {
 
     await this.npmInstall({ npmClient: this.answers.pm })
 
+    const installModule = this.outDir.indexOf('nuxt\\modules\\') !== -1 ? 'modules/' : ''
     const isNewFolder = this.outDir !== process.cwd()
     const cd = () => {
       if (isNewFolder) {
-        console.log(`\t${this.chalk.cyan('cd')} nuxt/${this.outFolder}`)
+        console.log(`\t${this.chalk.cyan('cd')} nuxt/` + installModule + `${this.outFolder}`)
       }
     }
 
