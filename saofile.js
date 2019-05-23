@@ -76,17 +76,17 @@ module.exports = {
       ],
       default: 'none'
     },
-    // {
-    //   name: 'test',
-    //   message: 'Use a custom test framework',
-    //   type: 'list',
-    //   choices: [
-    //     'none',
-    //     'jest',
-    //     'ava'
-    //   ],
-    //   default: 'none'
-    // },
+    {
+      name: 'test',
+      message: 'Use a custom test framework',
+      type: 'list',
+      choices: [
+        'none',
+        'jest',
+        'ava'
+      ],
+      default: 'none'
+    },
     // {
     //   name: 'mode',
     //   message: 'Choose rendering mode',
@@ -139,6 +139,7 @@ module.exports = {
     }
   },
   actions() {
+
     const validation = validate(this.answers.name)
     validation.warnings && validation.warnings.forEach((warn) => {
       console.warn('Warning:', warn)
@@ -150,6 +151,8 @@ module.exports = {
 
     const installType = (this.outDir.indexOf('nuxt\\modules\\')) !== -1 ? 'module' : 'project'
     const installModulePrefix = (installType === 'module') ? '../' : ''
+
+    const installTestPrefix = (process.env.NODE_ENV !== 'test') ? '../' : ''
 
     const actions = [{
       type: 'add',
@@ -189,7 +192,14 @@ module.exports = {
     })
     
     // PlatformOS Marketplace Builder
-    const marketplaceKitPath = path.resolve(this.outDir, installModulePrefix + '../../.marketplace-kit')
+    let marketplaceKitPath
+    if (process.env.NODE_ENV !== 'test') {
+      marketplaceKitPath = path.resolve(this.outDir, installModulePrefix + '../../.marketplace-kit')
+    } else {
+      marketplaceKitPath = path.resolve('test/.marketplace-kit')
+    }
+
+
     let marketplaceKit
     try {
       marketplaceKit = JSON.parse(fs.readFileSync(marketplaceKitPath, 'utf-8'))
@@ -219,10 +229,10 @@ module.exports = {
       actions.push({
         type: 'move',
         patterns: {
-          'private': installModulePrefix + '../../marketplace_builder/modules/' + this.answers.name + '/private',
-          'public': installModulePrefix + '../../marketplace_builder/modules/' + this.answers.name + '/public'
+          'private': installModulePrefix + installTestPrefix + '../modules/' + this.answers.name + '/private',
+          'public': installModulePrefix + installTestPrefix + '../modules/' + this.answers.name + '/public'
         }
-      }) 
+      })
       
       actions.push({
         type: 'add',
@@ -233,7 +243,7 @@ module.exports = {
       actions.push({
         type: 'move',
         patterns: {
-          'nuxt_src': installModulePrefix + '../../marketplace_builder/modules/' + this.answers.name + '/nuxt_src'
+          'nuxt_src': installModulePrefix + installTestPrefix + '../modules/' + this.answers.name + '/nuxt_src'
         }
       })
 
@@ -247,7 +257,7 @@ module.exports = {
       actions.push({
         type: 'move',
         patterns: {
-          'marketplace_builder': '../../marketplace_builder',
+          'marketplace_builder': installTestPrefix + '../marketplace_builder'
         }
       }) 
       
@@ -260,7 +270,7 @@ module.exports = {
       actions.push({
         type: 'move',
         patterns: {
-          'nuxt_src': '../../marketplace_builder/nuxt_src'
+          'nuxt_src': installTestPrefix + '../marketplace_builder/nuxt_src'
         }
       })
 
@@ -304,7 +314,11 @@ module.exports = {
   async completed() {
     this.gitInit()
 
-    await this.npmInstall({ npmClient: this.answers.pm })
+    if (this.answers.pm === 'pnpm') {
+      await this.npmInstall({ npmClient: this.answers.pm + " --shamefully-flatten" })
+    } else {
+      await this.npmInstall({ npmClient: this.answers.pm })
+    }
 
     const installModule = this.outDir.indexOf('nuxt\\modules\\') !== -1 ? 'modules/' : ''
     const isNewFolder = this.outDir !== process.cwd()
