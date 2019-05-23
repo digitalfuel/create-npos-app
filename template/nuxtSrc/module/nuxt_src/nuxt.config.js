@@ -1,4 +1,4 @@
-module.exports = pkg => ({
+module.exports = {
   /*
   ** WARNING: The following are used by the nuxt platformOS intergration and if altered would best be done in the root nuxt/nuxt.config.js file for this project. 
      Change with CAUTION!!!
@@ -9,11 +9,11 @@ module.exports = pkg => ({
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    title: process.env.npm_package_name || '',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { hid: 'description', name: 'description', content: pkg.description },
+      { hid: 'description', name: 'description', content: process.env.npm_package_description || '' },
       { name: "csrf-param", content: "authenticity_token" },
       { name: "csrf-token", content: "{{ context.authenticity_token }}" }
     ],
@@ -62,4 +62,4 @@ module.exports = pkg => ({
     //  devtools: true
     }
   }
-})
+}

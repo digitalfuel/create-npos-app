@@ -2,15 +2,12 @@
 <% if (ui === 'vuetify') { -%>
 import VuetifyLoaderPlugin from 'vuetify-loader/lib/plugin'
 <% } -%>
-import pkg from './package'
 <% } else if (server === 'adonis') { -%>
 const { resolve } = require('path')
-const pkg = require('../package')
 <%} else { -%>
-const pkg = require('./package')
 const merge = require('webpack-merge')
 <% if ( installPath.startsWith("modules/") ) { -%>
-const config = require('../../../marketplace_builder/modules/' + pkg.name + '/nuxt_src/nuxt.config.js')<%} else { -%>
+const config = require('../../../marketplace_builder/modules/' + process.env.npm_package_name || '' + '/nuxt_src/nuxt.config.js')<%} else { -%>
 const config = require('../../marketplace_builder/nuxt_src/nuxt.config.js')<% } %>
 <% if ( installPath.startsWith("modules/") ) { -%>
 require('dotenv').config({ path: '../../../.env' })<%} else { -%>
@@ -34,13 +31,13 @@ module.exports = () => merge({
   */
   dir: {
   <% if ( installPath.startsWith("modules/") ) { -%>
-  middleware: '../../../../nuxt/modules/' + pkg.name + '/middleware'
+  middleware: '../../../../nuxt/modules/' + process.env.npm_package_name || '' + '/middleware'
   <%} else { -%>
-  middleware: '../../nuxt/' + pkg.name + '/middleware'<% } %>
+  middleware: '../../nuxt/' + process.env.npm_package_name || '' + '/middleware'<% } %>
   },
 
 <% if ( installPath.startsWith("modules/") ) { -%>
-  srcDir: '../../../marketplace_builder/modules/' + pkg.name + '/nuxt_src/',
+  srcDir: '../../../marketplace_builder/modules/' + process.env.npm_package_name || '' + '/nuxt_src/',
 <%} else { -%>
   srcDir: '../../marketplace_builder/nuxt_src/',<% } %>
 
@@ -48,7 +45,7 @@ module.exports = () => merge({
   ** Headers of the page
   */
   head: {
-    title: pkg.name,
+    title: process.env.npm_package_name || '',
     meta: [],
     link: []
   },
@@ -105,12 +102,12 @@ module.exports = () => merge({
     // Doc: https://buefy.github.io/#/documentation
     'nuxt-buefy',<% } %><% if (pwa === 'yes') { %>
     '@nuxtjs/pwa',<% } %>
-  ],<% if (axios === 'yes') { %>
+  ],
+  <% if (axios === 'yes') { %>
   /*
   ** Axios module configuration
   */
   axios: {
-    // See https://axios.nuxtjs.org/options
     baseURL: (process.env.POS_ENV !== 'production') ? process.env.STAGING_URL + process.env.API_PREFIX : process.env.PRODUCTION_URL + process.env.API_PREFIX,
     proxy: (process.env.NODE_ENV !== 'production') ? true : false
   },
@@ -123,7 +120,7 @@ module.exports = () => merge({
   */
   generate: {
   <% if ( installPath.startsWith("modules/") ) { -%>
-  dir: '../../../marketplace_builder/modules/' + pkg.name + '/private/assets/_nuxt'
+  dir: '../../../marketplace_builder/modules/' + process.env.npm_package_name || '' + '/private/assets/_nuxt'
   <%} else { -%>
   dir: '../../marketplace_builder/assets/_nuxt'<% } %>
   },
@@ -211,4 +208,4 @@ module.exports = () => merge({
      devtools: false
     }
   }
-}, config(pkg) )
+}, config() )
