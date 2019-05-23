@@ -25,47 +25,47 @@ test('defaults', async (t) => {
   await verifyPkg(t)
 })
 
-test('use express', async (t) => {
-  await verifyPkg(t, {
-    server: 'express'
-  })
-})
+// test('use express', async (t) => {
+//   await verifyPkg(t, {
+//     server: 'express'
+//   })
+// })
 
-test('use koa', async (t) => {
-  await verifyPkg(t, {
-    server: 'koa'
-  })
-})
+// test('use koa', async (t) => {
+//   await verifyPkg(t, {
+//     server: 'koa'
+//   })
+// })
 
-test('use hapi', async (t) => {
-  await verifyPkg(t, {
-    server: 'hapi'
-  })
-})
+// test('use hapi', async (t) => {
+//   await verifyPkg(t, {
+//     server: 'hapi'
+//   })
+// })
 
-test('use feathers', async (t) => {
-  await verifyPkg(t, {
-    server: 'feathers'
-  })
-})
+// test('use feathers', async (t) => {
+//   await verifyPkg(t, {
+//     server: 'feathers'
+//   })
+// })
 
-test('use micro', async (t) => {
-  await verifyPkg(t, {
-    server: 'micro'
-  })
-})
+// test('use micro', async (t) => {
+//   await verifyPkg(t, {
+//     server: 'micro'
+//   })
+// })
 
-test('use fastify', async (t) => {
-  await verifyPkg(t, {
-    server: 'fastify'
-  })
-})
+// test('use fastify', async (t) => {
+//   await verifyPkg(t, {
+//     server: 'fastify'
+//   })
+// })
 
-test('use axios', async (t) => {
-  await verifyPkg(t, {
-    features: ['axios']
-  })
-})
+// test('use axios', async (t) => {
+//   await verifyPkg(t, {
+//     features: ['axios']
+//   })
+// })
 
 test('use jest', async (t) => {
   await verifyPkg(t, {
@@ -82,6 +82,12 @@ test('use ava', async (t) => {
 test('use eslint', async (t) => {
   await verifyPkg(t, {
     features: ['linter']
+  })
+})
+
+test('use pnpm', async (t) => {
+  await verifyPkg(t, {
+    pm: 'pnpm'
   })
 })
 
