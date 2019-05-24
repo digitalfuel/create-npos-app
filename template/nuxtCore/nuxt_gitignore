@@ -60,8 +60,3 @@ dist
 .idea
 # Service worker
 sw.*
-# PlatformOS
-.marketplace-kit
-.tmp/
-marketplace_builder/.svn/
-tmp/

@@ -183,7 +183,7 @@ module.exports = {
     actions.push({
       type: 'move',
       patterns: {
-        // gitignore: '.gitignore',
+        nuxt_gitignore: '.gitignore',
         '_package.json': 'package.json',
         '_.eslintrc.js': '.eslintrc.js',
         'pos.generate.js': installModulePrefix + '../pos.generate.js',
@@ -285,6 +285,11 @@ module.exports = {
         patterns: {
           gitignore: installModulePrefix + '../../.gitignore'
         }
+      })
+    } else {
+      actions.push({
+        type: 'remove',
+        files: 'gitignore'
       })
     }
     
