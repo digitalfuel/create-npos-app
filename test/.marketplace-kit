@@ -1,0 +1,7 @@
+{
+  "staging": {
+    "url": "https://create-npos-app.staging.oregon.platform-os.com/",
+    "token": "123456",
+    "email": "daniel@digitalfuel.co.nz"
+  }
+}
