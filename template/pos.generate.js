@@ -27,7 +27,7 @@ module.exports = function(page) {
   // load pos block into Cheerio
   const vuePath = (installType !== 'module')
         ? '../../marketplace_builder/nuxt_src/pages' + pageFile + '.vue'
-        : '../../../marketplace_builder/' + installPath + '/nuxt_src/pages' + pageFile + '.vue'
+        : '../../../' + installPath + '/nuxt_src/pages' + pageFile + '.vue'
   const pos = cheerio.load(fs.readFileSync(vuePath), { })
 
   // Get pos block content
@@ -131,7 +131,7 @@ module.exports = function(page) {
   // VARIABLE LIQUID PARTIAL //
   const partialPath = (installType !== 'module')
         ? '../../marketplace_builder/views/partials/pages'
-        : '../../../marketplace_builder/' + installPath + '/' + privacyPath + 'views/partials/pages'
+        : '../../../' + installPath + '/' + privacyPath + 'views/partials/pages'
   const partialFile = partialPath + pageFile + '.liquid'
 
   const partialContent = posContents[2].trim()
@@ -140,7 +140,7 @@ module.exports = function(page) {
   // API LIQUID JSON //
   const jsonPath = (installType !== 'module')
         ? '../../marketplace_builder/views/pages'
-        : '../../../marketplace_builder/' + installPath + '/' + privacyPath + 'views/pages'
+        : '../../../' + installPath + '/' + privacyPath + 'views/pages'
   const jsonFile = jsonPath + pageFile + '.json.liquid'
 
   let jsonYAML = posContents[1].replace('slug: ','slug: api/pages/' )
