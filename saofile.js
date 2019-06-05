@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path')
 // const { join } = require('path')
 const superb = require('superb')
-const glob = require('glob')
+// const glob = require('glob')
 const spawn = require('cross-spawn')
 const validate = require('validate-npm-package-name')
 

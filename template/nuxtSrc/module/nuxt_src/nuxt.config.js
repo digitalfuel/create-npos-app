@@ -1,4 +1,4 @@
-module.exports = {
+module.exports = () => ({
   /*
   ** WARNING: The following are used by the nuxt platformOS intergration and if altered would best be done in the root nuxt/nuxt.config.js file for this project. 
      Change with CAUTION!!!
@@ -17,7 +17,9 @@ module.exports = {
       { name: "csrf-param", content: "authenticity_token" },
       { name: "csrf-token", content: "{{ context.authenticity_token }}" }
     ],
-    link: []
+    link: [
+      { rel: 'icon', type: 'image/x-icon', href: "{{ 'favicon.ico' | asset_url }}" }
+    ]
   },
 
   env: {},
@@ -62,4 +64,4 @@ module.exports = {
     //  devtools: true
     }
   }
-}
+})

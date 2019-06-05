@@ -7,7 +7,7 @@ const { resolve } = require('path')
 <%} else { -%>
 const merge = require('webpack-merge')
 <% if ( installPath.startsWith("modules/") ) { -%>
-const config = require('../../../marketplace_builder/modules/' + process.env.npm_package_name || '' + '/nuxt_src/nuxt.config.js')<%} else { -%>
+const config = require( ( '../../../modules/' + process.env.npm_package_name || '' ) + '/nuxt_src/nuxt.config.js' )<%} else { -%>
 const config = require('../../marketplace_builder/nuxt_src/nuxt.config.js')<% } %>
 <% if ( installPath.startsWith("modules/") ) { -%>
 require('dotenv').config({ path: '../../../.env' })<%} else { -%>
@@ -31,13 +31,13 @@ module.exports = () => merge({
   */
   dir: {
   <% if ( installPath.startsWith("modules/") ) { -%>
-  middleware: '../../../../nuxt/modules/' + process.env.npm_package_name || '' + '/middleware'
+  middleware: ( '../../../nuxt/modules/' + process.env.npm_package_name || '' ) + '/middleware'
   <%} else { -%>
-  middleware: '../../nuxt/' + process.env.npm_package_name || '' + '/middleware'<% } %>
+  middleware: ( '../../nuxt/' + process.env.npm_package_name || '' ) + '/middleware'<% } %>
   },
 
 <% if ( installPath.startsWith("modules/") ) { -%>
-  srcDir: '../../../marketplace_builder/modules/' + process.env.npm_package_name || '' + '/nuxt_src/',
+  srcDir: ( '../../../modules/' + process.env.npm_package_name || '' ) + '/nuxt_src/',
 <%} else { -%>
   srcDir: '../../marketplace_builder/nuxt_src/',<% } %>
 
@@ -120,7 +120,7 @@ module.exports = () => merge({
   */
   generate: {
   <% if ( installPath.startsWith("modules/") ) { -%>
-  dir: '../../../marketplace_builder/modules/' + process.env.npm_package_name || '' + '/private/assets/_nuxt'
+  dir: ( '../../../modules/' + process.env.npm_package_name || '' ) + '/private/assets/_nuxt'
   <%} else { -%>
   dir: '../../marketplace_builder/assets/_nuxt'<% } %>
   },
